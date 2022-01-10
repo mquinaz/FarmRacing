@@ -19,6 +19,17 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+	if (event.type == sf::Event::KeyPressed)
+	{
+	    if (event.key.code == sf::Keyboard::B)
+	    {
+		std::cout << "the escape key was pressed" << std::endl;
+		std::cout << "control:" << event.key.control << std::endl;
+		std::cout << "alt:" << event.key.alt << std::endl;
+		std::cout << "shift:" << event.key.shift << std::endl;
+		std::cout << "system:" << event.key.system << std::endl;
+	    }
+	}
         }
 
         window.clear();
