@@ -3,12 +3,15 @@
 using namespace std;
 
 int main()
-{
-	sf::Clock programClock,playClock; 
+{	
+    //macOS just won't agree if you try to create a window or handle events in a thread other than the main one.
+    //Windows doesn't like windows that are bigger than the desktop. This includes windows created with VideoMode::getDesktopMode(): with the window decorations (borders and titlebar) added, you end up with a window which is slightly bigger than the desktop.
+
+    sf::Clock programClock,playClock; 
     sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
-
+    //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
     while (window.isOpen())
     {
         sf::Event event;
