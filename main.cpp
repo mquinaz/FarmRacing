@@ -1,8 +1,11 @@
 #include <SFML/Graphics.hpp>
+#include<iostream>
+using namespace std;
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+	sf::Clock programClock,playClock; 
+    sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
@@ -16,9 +19,19 @@ int main()
         }
 
         window.clear();
+        sf::Time elapsedPlay = playClock.restart();
+        cout << elapsedPlay.asSeconds() << endl;
         window.draw(shape);
         window.display();
     }
 
+
+	sf::Time elapsedProgram = programClock.getElapsedTime();
+	cout << elapsedProgram.asSeconds() << endl;
     return 0;
 }
+
+
+
+//g++ -c main.cpp
+//g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
