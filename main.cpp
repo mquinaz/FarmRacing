@@ -3,6 +3,8 @@
 #include<iostream>
 #include<string>
 
+#define PRICEPLAY 1
+
 using namespace std;
 
 int main()
@@ -76,7 +78,9 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-                
+            
+            if(flagPLay)
+				break;
 			if (event.type == sf::Event::KeyPressed)
 			{
 				if (event.key.code == sf::Keyboard::B)
@@ -100,17 +104,14 @@ int main()
 				}
 				if (event.key.code == sf::Keyboard::Enter)
 				{
-					cout << "the Enter key was pressed" << endl;
+					cout << "the Enter key was pressed" << endl;				
 					if( creditsIn <= 0)
 					{
 						cout << "Insufficient Credits to start" << endl;
 						continue;
 					}
-					if(!flagPlay)
-					{
-						creditsIn--;
-						flagPlay = true;
-					}		
+					creditsIn -= PRICEPLAY;
+					flagPlay = true;				
 				}
 			}
         }
@@ -123,6 +124,8 @@ int main()
 			cout << "game" << endl;
 			plays++;
 			textStart.setString("PLAY: " + to_string(plays));
+			flagPlay = false;	
+			continue;
 		}
         window.clear();
         //window.draw(shape);	
