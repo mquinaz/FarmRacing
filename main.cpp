@@ -60,6 +60,14 @@ int main()
         }
 
         window.clear();
+	    /*
+	    sound.setVolume(50.f);
+	    sound.setLoop(true);
+	    sf::Music music;
+if (!music.openFromFile("music.ogg"))
+    return -1; // error
+music.play();
+	    */
         sf::Time elapsedPlay = playClock.restart();
         cout << elapsedPlay.asSeconds() << endl;
         window.draw(shape);
