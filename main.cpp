@@ -24,18 +24,23 @@ int main()
 	}
 	
 	sf::Music music;
-	if (!music.openFromFile("choroq.wav")){
+	if (!music.openFromFile("choroq.wav"))
+	{
 		cout << "Error opening music file" << endl;
 		return -1;
 	}
-	
+	//sound.setVolume(50.f);
+	music.setLoop(true);
+	music.play();
 	
 	int creditsIn = 0;
 	int creditsOut = 0;
+	int plays = 0;
+	bool flagPlay = false;
 	
 	sf::Text textStart,	textCreditsIn, textCreditsOut, textCredits, textCoin;
 	textStart.setFont(font); // font is a sf::Font
-	textStart.setString("PLAY: 0");
+	textStart.setString("PLAY: " + to_string(plays));
 	textStart.setCharacterSize(30); // in pixels, not points!
 	textStart.setFillColor(sf::Color::White);
 	textStart.setStyle(sf::Text::Bold);
@@ -54,7 +59,7 @@ int main()
 	textCreditsOut.setPosition(75.f, 550.f);
 
 	textCredits = textStart;
-	textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");
+	textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 	textCredits.setCharacterSize(20);
 	textCredits.setStyle(sf::Text::Regular);	
 	textCredits.setPosition(75.f, 575.f);
@@ -63,10 +68,6 @@ int main()
 	textCoin.setString("INSERT COIN");
 	textCoin.setStyle(sf::Text::Regular);
 	textCoin.setPosition(90.f, 615.f);
-		
-	//sound.setVolume(50.f);
-	//sound.setLoop(true);
-	music.play();
 	    
     while (window.isOpen())
     {
@@ -82,31 +83,48 @@ int main()
 				{
 					std::cout << "the B key was pressed" << std::endl;
 					creditsIn++;
-					textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");
+					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 								
 				}
 				if (event.key.code == sf::Keyboard::R)
 				{
-					std::cout << "the R key was pressed" << std::endl;
-					if( creditsIn <=0){
+					cout << "the R key was pressed" << endl;
+					if( creditsIn <=0)
+					{
 						cout << "Insufficient Credits to retrieve" << endl;
 						continue;
 					}
 					creditsOut++;
 					creditsIn--;
-					textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");							
+					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");							
 				}
-				if (event.key.code == sf::Keyboard::Escape)
+				if (event.key.code == sf::Keyboard::Enter)
 				{
-					std::cout << "the O key was pressed" << std::endl;
-								
+					cout << "the Enter key was pressed" << endl;
+					if( creditsIn <= 0)
+					{
+						cout << "Insufficient Credits to start" << endl;
+						continue;
+					}
+					if(!flagPlay)
+					{
+						creditsIn--;
+						flagPlay = true;
+					}		
 				}
 			}
         }
 
-        window.clear();
         sf::Time elapsedPlay = playClock.restart();
         //cout << elapsedPlay.asSeconds() << endl;
+
+		if(flagPlay)
+		{
+			cout << "game" << endl;
+			plays++;
+			textStart.setString("PLAY: " + to_string(plays));
+		}
+        window.clear();
         //window.draw(shape);	
         window.draw(textStart);
 		window.draw(textCreditsIn);
