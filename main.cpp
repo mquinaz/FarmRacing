@@ -1,5 +1,8 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include<iostream>
+#include<string>
+
 using namespace std;
 
 int main()
@@ -12,12 +15,59 @@ int main()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
+    
 	sf::Font font;
 	if (!font.loadFromFile("mk2.ttf"))
 	{
-		cout << "Error reading font file" << endl;
-		return 0;
+		cout << "Error opening font file" << endl;
+		return -1;
 	}
+	
+	sf::Music music;
+	if (!music.openFromFile("choroq.wav")){
+		cout << "Error opening music file" << endl;
+		return -1;
+	}
+	
+	
+	int creditsIn = 0;
+	int creditsOut = 0;
+	
+	sf::Text textStart,	textCreditsIn, textCreditsOut, textCredits, textCoin;
+	textStart.setFont(font); // font is a sf::Font
+	textStart.setString("PLAY: 0");
+	textStart.setCharacterSize(30); // in pixels, not points!
+	textStart.setFillColor(sf::Color::White);
+	textStart.setStyle(sf::Text::Bold);
+	textStart.setPosition(100.f, 475.f);
+	
+	textCreditsIn = textStart;
+	textCreditsIn.setString("B TO INSERT CREDITS");
+	textCreditsIn.setCharacterSize(20);
+	textCreditsIn.setStyle(sf::Text::Regular);
+	textCreditsIn.setPosition(75.f, 525.f);
+	
+	textCreditsOut = textStart;
+	textCreditsOut.setString("R TO RETRIEVE CREDITS");
+	textCreditsOut.setCharacterSize(20);
+	textCreditsOut.setStyle(sf::Text::Regular);
+	textCreditsOut.setPosition(75.f, 550.f);
+
+	textCredits = textStart;
+	textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");
+	textCredits.setCharacterSize(20);
+	textCredits.setStyle(sf::Text::Regular);	
+	textCredits.setPosition(75.f, 575.f);
+	
+	textCoin = textStart;
+	textCoin.setString("INSERT COIN");
+	textCoin.setStyle(sf::Text::Regular);
+	textCoin.setPosition(90.f, 615.f);
+		
+	//sound.setVolume(50.f);
+	//sound.setLoop(true);
+	music.play();
+	    
     while (window.isOpen())
     {
         sf::Event event;
@@ -25,52 +75,44 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-	if (event.type == sf::Event::KeyPressed)
-	{
-	    if (event.key.code == sf::Keyboard::B)
-	    {
-		std::cout << "the escape key was pressed" << std::endl;
-		std::cout << "control:" << event.key.control << std::endl;
-		std::cout << "alt:" << event.key.alt << std::endl;
-		std::cout << "shift:" << event.key.shift << std::endl;
-		std::cout << "system:" << event.key.system << std::endl;
-		    
-		    window.clear();
-		    sf::Text text;
-			
-			// select the font
-			text.setFont(font); // font is a sf::Font
-
-			// set the string to display
-			text.setString("Hello world");
-
-			// set the character size
-			text.setCharacterSize(24); // in pixels, not points!
-
-			// set the color
-			text.setFillColor(sf::Color::Red);
-
-			// set the text style
-			text.setStyle(sf::Text::Bold | sf::Text::Underlined);
-			// inside the main loop, between window.clear() and window.display()
-			window.draw(text);
-
-	    }
-	}
+                
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::B)
+				{
+					std::cout << "the B key was pressed" << std::endl;
+					creditsIn++;
+					textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");
+								
+				}
+				if (event.key.code == sf::Keyboard::R)
+				{
+					std::cout << "the R key was pressed" << std::endl;
+					if( creditsIn <=0){
+						cout << "Insufficient Credits to retrieve" << endl;
+						continue;
+					}
+					creditsOut++;
+					creditsIn--;
+					textCredits.setString(to_string(creditsIn) +" CREDITS IN / " + to_string(creditsOut) +" CREDITS OUT");							
+				}
+				if (event.key.code == sf::Keyboard::Escape)
+				{
+					std::cout << "the O key was pressed" << std::endl;
+								
+				}
+			}
         }
 
         window.clear();
-	    /*
-	    sound.setVolume(50.f);
-	    sound.setLoop(true);
-	    sf::Music music;
-if (!music.openFromFile("music.ogg"))
-    return -1; // error
-music.play();
-	    */
         sf::Time elapsedPlay = playClock.restart();
-        cout << elapsedPlay.asSeconds() << endl;
-        window.draw(shape);
+        //cout << elapsedPlay.asSeconds() << endl;
+        //window.draw(shape);	
+        window.draw(textStart);
+		window.draw(textCreditsIn);
+		window.draw(textCreditsOut);
+		window.draw(textCredits);
+		window.draw(textCoin);
         window.display();
     }
 
@@ -83,4 +125,5 @@ music.play();
 
 
 //g++ -c main.cpp
-//g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
+//g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+
