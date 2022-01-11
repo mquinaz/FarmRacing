@@ -12,6 +12,12 @@ int main()
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
+	sf::Font font;
+	if (!font.loadFromFile("mk2.ttf"))
+	{
+		cout << "Error reading font file" << endl;
+		return 0;
+	}
     while (window.isOpen())
     {
         sf::Event event;
@@ -28,6 +34,27 @@ int main()
 		std::cout << "alt:" << event.key.alt << std::endl;
 		std::cout << "shift:" << event.key.shift << std::endl;
 		std::cout << "system:" << event.key.system << std::endl;
+		    
+		    window.clear();
+		    sf::Text text;
+			
+			// select the font
+			text.setFont(font); // font is a sf::Font
+
+			// set the string to display
+			text.setString("Hello world");
+
+			// set the character size
+			text.setCharacterSize(24); // in pixels, not points!
+
+			// set the color
+			text.setFillColor(sf::Color::Red);
+
+			// set the text style
+			text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+			// inside the main loop, between window.clear() and window.display()
+			window.draw(text);
+
 	    }
 	}
         }
