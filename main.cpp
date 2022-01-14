@@ -2,10 +2,11 @@
 #include <SFML/Audio.hpp>
 #include <iostream>
 #include <string>
+#include <random>
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
-#define DURATIONANIMATION 1.5
+#define DURATIONANIMATION 0.5
 using namespace std;
 
 struct Player
@@ -15,6 +16,11 @@ struct Player
 	sf::Sprite x;
 };
 
+struct Mapfarm
+{
+	 vector< pair <int,int> > coords;
+};
+
 int main()
 {	
     //macOS just won't agree if you try to create a window or handle events in a thread other than the main one.
@@ -22,12 +28,10 @@ int main()
 
     sf::Clock programClock,playClock; 
     sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
-    sf::CircleShape shape(100.f);
-    shape.setFillColor(sf::Color::Green);
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
          	
 	sf::Texture textureBackground_Image;
-    if(!textureBackground_Image.loadFromFile("resource/possibleTexture.png") )
+    if(!textureBackground_Image.loadFromFile("resource/background.png") )
 	{
 		cout << "Error opening background image" << endl; 
 		return -1;
@@ -68,6 +72,7 @@ int main()
 	int plays = 0;
 	bool flagPlay = false;
 	
+	//Setting the UI
 	sf::Text textStart,	textCreditsIn, textCreditsOut, textCredits, textCoin;
 	textStart.setFont(font); // font is a sf::Font
 	textStart.setString("PLAY: " + to_string(plays));
@@ -99,12 +104,18 @@ int main()
 	textCoin.setStyle(sf::Text::Regular);
 	textCoin.setPosition(90.f, 615.f);
 	
+	//defining the map (done previously using mouse click event to find coordinates
+	Mapfarm mapList;
+	mapList.coords.push_back( make_pair( 30,395) );
+	mapList.coords.push_back( make_pair( 30,501) );
+	mapList.coords.push_back( make_pair( 30,623) );
+	mapList.coords.push_back( make_pair( 30,708) );
+	mapList.coords.push_back( make_pair( 30,769) );
 	
 	Player spriteList[SIZESPRITES];	
-	//sf::Texture spriteTextures[SIZESPRITES][7];
 	sf::Texture spriteTextures;
 	sf::Sprite spriteCharacter;
-    //spriteBackground_Image.setScale(ScaleX, ScaleY); 
+	//In here we fill the struct by reading all images and assigning them to a vector of textures and assigning the first of these to a sprite
 	for(int i=1;i<=SIZESPRITES;i++)
 	{
 		string fileSpriteNameBeggining = "resource/";
@@ -140,9 +151,12 @@ int main()
 			spriteList[i-1].frames.push_back( spriteTextures );				
 		}
 		sf::Sprite spriteCharacter( spriteList[i-1].frames[0] );
+		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
 	}
 	
+	
+	//game loop
     while (window.isOpen())
     {
         sf::Event event;
@@ -150,9 +164,16 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            
+            if( event.type == sf::Event::MouseButtonPressed)
+            {
+				cout << "Button " << event.mouseButton.button << " @ "
+                     << sf::Mouse::getPosition(window).x << ", "
+                     << sf::Mouse::getPosition(window).y << endl;
+			}
+			
             if(flagPlay)
 				break;
+				
 			if (event.type == sf::Event::KeyPressed)
 			{
 				if (event.key.code == sf::Keyboard::B)
@@ -160,7 +181,7 @@ int main()
 					std::cout << "the B key was pressed" << std::endl;
 					creditsIn++;
 					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
-								
+					spriteList[4].x.setTexture(spriteList[4].frames[3]);
 				}
 				if (event.key.code == sf::Keyboard::R)
 				{
@@ -190,16 +211,6 @@ int main()
 
         sf::Time elapsedPlay = playClock.restart();
         //cout << elapsedPlay.asSeconds() << endl;
-
-		if(flagPlay)
-		{
-			cout << "game" << endl;
-			plays++;
-			textStart.setString("PLAY: " + to_string(plays));
-			textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
-			flagPlay = false;	
-			continue;
-		}
         window.clear();
         
 		window.draw(spriteBackground_Image);
@@ -209,7 +220,32 @@ int main()
 		window.draw(textCredits);
 		window.draw(textCoin);
 		
-		window.draw(spriteList[4].x);
+		if(flagPlay)
+		{	
+			plays++;
+			textStart.setString("PLAY: " + to_string(plays));
+			textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
+			
+			//if possible improve this method - https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+			random_device dev;
+			mt19937 rng(dev());
+			uniform_int_distribution<mt19937::result_type> dist6(0,6); // distribution in range [0, 6]
+			int playerOut = dist6(rng);
+			cout << playerOut << endl;
+			
+			for(int i=0;i<=6;i++)
+			{
+				if( i == playerOut )
+					continue;
+
+				spriteList[i].x.move( mapList.coords[i].first , mapList.coords[i].second);
+				window.draw(spriteList[0].x);			
+			}
+			
+			//flagPlay = false;	
+			continue;
+		}
+		
         window.display();
     }
 
