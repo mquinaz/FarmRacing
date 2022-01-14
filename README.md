@@ -20,6 +20,8 @@ shorturl.at/efET4
 https://br.freepik.com/vetores-premium/lucky-husky-game-sprites_1420548.htm
 
 
+Edited with gimp and https://www2.lunapic.com/editor/
+
 ## C++ game development challenge
 
 To compile:
