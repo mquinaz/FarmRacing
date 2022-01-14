@@ -1,38 +1,59 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 
 #define PRICEPLAY 1
-
+#define SIZESPRITES 7
 using namespace std;
+
+struct Player
+{
+	vector<sf::Texture> frames;
+	int size;
+	sf:Sprite *x;
+}	
 
 int main()
 {	
     //macOS just won't agree if you try to create a window or handle events in a thread other than the main one.
     //Windows doesn't like windows that are bigger than the desktop. This includes windows created with VideoMode::getDesktopMode(): with the window decorations (borders and titlebar) added, you end up with a window which is slightly bigger than the desktop.
 
-	/*
-	sf::ContextSettings settings;
-settings.antialiasingLevel = 8;
-
-sf::RenderWindow window(sf::VideoMode(800, 600), "SFML shapes", sf::Style::Default, settings);
-*/
     sf::Clock programClock,playClock; 
     sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
+         	
+	sf::Texture textureBackground_Image;
+    if(!textureBackground_Image.loadFromFile("resource/possibleTexture.png") )
+	{
+		cout << "Error opening background image" << endl; 
+		return -1;
+	}
+	
+	sf::Vector2u textureBackgroundSize;
+	sf::Vector2u windowSize; 
+  
+	textureBackground_Image.setSmooth(true);
+	textureBackgroundSize = textureBackground_Image.getSize();
+	windowSize = window.getSize(); 
+	float ScaleX = (float) windowSize.x / textureBackgroundSize.x;
+    float ScaleY = (float) windowSize.y / textureBackgroundSize.y;   
+
+    sf::Sprite spriteBackground_Image(textureBackground_Image);
+    spriteBackground_Image.setScale(ScaleX, ScaleY); 
+    
     
 	sf::Font font;
-	if (!font.loadFromFile("mk2.ttf"))
+	if (!font.loadFromFile("resource/mk2.ttf"))
 	{
 		cout << "Error opening font file" << endl;
 		return -1;
 	}
 	
 	sf::Music music;
-	if (!music.openFromFile("choroq.wav"))
+	if (!music.openFromFile("resource/fazendinha.wav"))
 	{
 		cout << "Error opening music file" << endl;
 		return -1;
@@ -76,7 +97,48 @@ sf::RenderWindow window(sf::VideoMode(800, 600), "SFML shapes", sf::Style::Defau
 	textCoin.setString("INSERT COIN");
 	textCoin.setStyle(sf::Text::Regular);
 	textCoin.setPosition(90.f, 615.f);
-	    
+	
+	
+	Player spriteList[SIZESPRITES];	
+	sf::Texture spriteTextures;
+    spriteBackground_Image.setScale(ScaleX, ScaleY); 
+	for(int i=1;i<=SIZESPRITES;i++)
+	{
+		string fileSpriteName = "";
+		int j=6;
+		if(i == 1)
+			fileSpriteName += "cat";
+		if(i == 2)
+			fileSpriteName += "dog";			
+		if(i == 3)
+		{
+			fileSpriteName += "dragon";
+			j = 4;
+		}
+		if(i == 4)
+			fileSpriteName += "pony";
+		if(i == 5)
+			fileSpriteName += "ram";
+		if(i == 6)
+			fileSpriteName += "sheep";
+		if(i == 7)
+			fileSpriteName += "tiger";
+		
+		spriteList[i-1].size = j;
+		
+		for(int k=0;k<j;k++)
+		{
+			fileSpriteName += i + ".png";
+			if (!spriteTextures.loadFromFile("resource/" + fileSpriteName))
+			{
+				cout << "Error loading file " + fileSpriteName << endl;
+				return -1;			
+			}
+			spriteList[i-1].frames.insert(spriteTextures);				
+		}
+
+	}
+	
     while (window.isOpen())
     {
         sf::Event event;
@@ -85,7 +147,7 @@ sf::RenderWindow window(sf::VideoMode(800, 600), "SFML shapes", sf::Style::Defau
             if (event.type == sf::Event::Closed)
                 window.close();
             
-            if(flagPLay)
+            if(flagPlay)
 				break;
 			if (event.type == sf::Event::KeyPressed)
 			{
@@ -130,11 +192,13 @@ sf::RenderWindow window(sf::VideoMode(800, 600), "SFML shapes", sf::Style::Defau
 			cout << "game" << endl;
 			plays++;
 			textStart.setString("PLAY: " + to_string(plays));
+			textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 			flagPlay = false;	
 			continue;
 		}
         window.clear();
-        //window.draw(shape);	
+        
+		window.draw(spriteBackground_Image);
         window.draw(textStart);
 		window.draw(textCreditsIn);
 		window.draw(textCreditsOut);
