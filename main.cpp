@@ -5,13 +5,14 @@
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
+#define DURATIONANIMATION 1.5
 using namespace std;
 
 struct Player
 {
 	vector<sf::Texture> frames;
 	int size;
-	sf::Sprite *x;
+	sf::Sprite x;
 };
 
 int main()
@@ -100,7 +101,9 @@ int main()
 	
 	
 	Player spriteList[SIZESPRITES];	
-	sf::Texture spriteTextures[SIZESPRITES][7];
+	//sf::Texture spriteTextures[SIZESPRITES][7];
+	sf::Texture spriteTextures;
+	sf::Sprite spriteCharacter;
     //spriteBackground_Image.setScale(ScaleX, ScaleY); 
 	for(int i=1;i<=SIZESPRITES;i++)
 	{
@@ -125,19 +128,19 @@ int main()
 			fileSpriteNameBeggining += "tiger";
 		
 		spriteList[i-1].size = j;
-		vector<sf::Texture> auxFrames;
 		for(int k=0;k<j;k++)
 		{
 			string fileSpriteName = fileSpriteNameBeggining + to_string((k+1)) + ".png";
 			cout << fileSpriteName << endl; 
-			if (!spriteTextures[i-1][k].loadFromFile(fileSpriteName) )
+			if (!spriteTextures.loadFromFile(fileSpriteName) )
 			{
 				cout << "Error loading file " + fileSpriteName << endl;
 				return -1;			
 			}
-			//auxFrames[k] = spriteTextures[i-1][k];				
+			spriteList[i-1].frames.push_back( spriteTextures );				
 		}
-
+		sf::Sprite spriteCharacter( spriteList[i-1].frames[0] );
+		spriteList[i-1].x = spriteCharacter;
 	}
 	
     while (window.isOpen())
@@ -205,6 +208,8 @@ int main()
 		window.draw(textCreditsOut);
 		window.draw(textCredits);
 		window.draw(textCoin);
+		
+		window.draw(spriteList[4].x);
         window.display();
     }
 
@@ -213,9 +218,3 @@ int main()
 	cout << elapsedProgram.asSeconds() << endl;
     return 0;
 }
-
-
-
-//g++ -c main.cpp
-//g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
-
