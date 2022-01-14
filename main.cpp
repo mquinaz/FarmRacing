@@ -11,8 +11,8 @@ struct Player
 {
 	vector<sf::Texture> frames;
 	int size;
-	sf:Sprite *x;
-}	
+	sf::Sprite *x;
+};
 
 int main()
 {	
@@ -100,41 +100,42 @@ int main()
 	
 	
 	Player spriteList[SIZESPRITES];	
-	sf::Texture spriteTextures;
-    spriteBackground_Image.setScale(ScaleX, ScaleY); 
+	sf::Texture spriteTextures[SIZESPRITES][7];
+    //spriteBackground_Image.setScale(ScaleX, ScaleY); 
 	for(int i=1;i<=SIZESPRITES;i++)
 	{
-		string fileSpriteName = "";
+		string fileSpriteNameBeggining = "resource/";
 		int j=6;
 		if(i == 1)
-			fileSpriteName += "cat";
+			fileSpriteNameBeggining += "cat";
 		if(i == 2)
-			fileSpriteName += "dog";			
+			fileSpriteNameBeggining += "dog";			
 		if(i == 3)
 		{
-			fileSpriteName += "dragon";
+			fileSpriteNameBeggining += "dragon";
 			j = 4;
 		}
 		if(i == 4)
-			fileSpriteName += "pony";
+			fileSpriteNameBeggining += "pony";
 		if(i == 5)
-			fileSpriteName += "ram";
+			fileSpriteNameBeggining += "ram";
 		if(i == 6)
-			fileSpriteName += "sheep";
+			fileSpriteNameBeggining += "sheep";
 		if(i == 7)
-			fileSpriteName += "tiger";
+			fileSpriteNameBeggining += "tiger";
 		
 		spriteList[i-1].size = j;
-		
+		vector<sf::Texture> auxFrames;
 		for(int k=0;k<j;k++)
 		{
-			fileSpriteName += i + ".png";
-			if (!spriteTextures.loadFromFile("resource/" + fileSpriteName))
+			string fileSpriteName = fileSpriteNameBeggining + to_string((k+1)) + ".png";
+			cout << fileSpriteName << endl; 
+			if (!spriteTextures[i-1][k].loadFromFile(fileSpriteName) )
 			{
 				cout << "Error loading file " + fileSpriteName << endl;
 				return -1;			
 			}
-			spriteList[i-1].frames.insert(spriteTextures);				
+			//auxFrames[k] = spriteTextures[i-1][k];				
 		}
 
 	}
