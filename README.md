@@ -18,6 +18,8 @@ https://br.freepik.com/vetores-premium/lucky-husky-game-sprites_1420548.htm
 
 ## C++ game development challenge
 
-g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system
+To compile:
+g++ -c main.cpp
+g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-5 modules (system, window, graphics, network and audio) and to link an SFML library, you must add "-lsfml-xxx".
+to link an SFML library, you must add "-lsfml-xxx".
