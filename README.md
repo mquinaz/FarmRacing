@@ -20,7 +20,7 @@ shorturl.at/efET4
 https://br.freepik.com/vetores-premium/lucky-husky-game-sprites_1420548.htm
 
 
-Edited with gimp for cropping nd https://www2.lunapic.com/editor/ to remove background transparency of sprites.
+Edited with Gimp for cropping and https://www2.lunapic.com/editor/ to remove background transparency of sprites.
 
 ## C++ game development challenge
 
