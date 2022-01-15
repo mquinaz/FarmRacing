@@ -10,12 +10,15 @@
 #define SIZESPRITES 7
 #define DURATIONANIMATION 0.1
 #define VELOCITY 0.1
+#define RADIUS 500
+
 using namespace std;
 
 struct Player
 {
 	vector<sf::Texture> frames;
 	int size,currentFrame,currentWaypoint;
+	float coordX,coordY;
 	sf::Sprite x;
 };
 
@@ -187,8 +190,10 @@ int main()
 		spriteList[i-1].currentFrame = 0;
 		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
-		spriteList[i-1].x.move( mapList.coords[i-1].first , mapList.coords[i-1].second);
-		spriteList[i-1].currentWaypoint = 0;
+		spriteList[i-1].coordX = waypointList[0].x;
+		spriteList[i-1].coordY = waypointList[0].y;
+		spriteList[i-1].x.move( spriteList[i-1].coordX , spriteList[i-1].coordY);
+		spriteList[i-1].currentWaypoint = 1;
 	}
 	
 	
@@ -287,11 +292,19 @@ int main()
 			{
 				if( i == playerOut )
 					continue;
-
-				sf::Vector2f direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
-				//spriteList[i].x.move( 0.1 , 0);
-				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
 				
+				sf::Vector2f direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
+				if( direction.x + direction.y > RADIUS)
+				{	
+					spriteList[i].currentWaypoint++;
+					 direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
+					//spriteList[i].x.move( 0.1 , 0);
+				}
+				cout <<  direction.x << " " <<  direction.y;
+				//spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
+				spriteList[i].coordX += VELOCITY * direction.x;
+				spriteList[i].coordY += VELOCITY * direction.y;
+				spriteList[i].x.move( spriteList[i].coordX, spriteList[i].coordY );
 				window.draw(spriteList[i].x);			
 			}
 			//flagPlay = false;
