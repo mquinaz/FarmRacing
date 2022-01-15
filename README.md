@@ -19,6 +19,8 @@ shorturl.at/efET4
 
 https://br.freepik.com/vetores-premium/lucky-husky-game-sprites_1420548.htm
 
+https://www.istockphoto.com/pt/ilustra%C3%A7%C3%B5es/wooden-menu-boards-cartoons
+
 
 Edited with Gimp for cropping and https://www2.lunapic.com/editor/ to remove background transparency of sprites.
 
