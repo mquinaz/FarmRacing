@@ -10,7 +10,7 @@
 #define PRICEPLAY 1
 #define SIZESPRITES 7
 #define DURATIONANIMATION 0.08
-#define VELOCITY 0.15
+#define VELOCITY 0.5
 #define RADIUS 25
 
 using namespace std;
@@ -38,14 +38,14 @@ sf::Vector2f normalize(sf::Vector2f vec)
     return sf::Vector2f(newX,newY);
 }
 
-void raceResults(vector<int> results, map<int, string> playerMap)
+string raceResults(vector<int> results, map<int, string> playerMap)
 {
 	cout << "###Results of the race###"<< endl << endl;
+	string auxWinner = "";
 	for(int i=0;i<6;i++)
-	{
-		cout << to_string(i+1) + " place: " + playerMap[ results[i] ] << endl;;
-	}		
-	cout << endl;
+		auxWinner += to_string(i+1) + "# place: " + playerMap[ results[i] ]+"\n";
+
+	return auxWinner;
 }
 
 int main()
@@ -58,25 +58,40 @@ int main()
     sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
          	
-	sf::Texture textureBackground_Image;
-    if(!textureBackground_Image.loadFromFile("resource/background.png") )
+	sf::Texture textureFinalMenu;
+    if(!textureFinalMenu.loadFromFile("resource/finalMenu.png") )
+	{
+		cout << "Error opening menuFinal image" << endl; 
+		return -1;
+	}
+	
+	sf::Texture textureBackgroundImage;
+    if(!textureBackgroundImage.loadFromFile("resource/background.png") )
 	{
 		cout << "Error opening background image" << endl; 
 		return -1;
 	}
 	
+	//Background image
 	sf::Vector2u textureBackgroundSize;
 	sf::Vector2u windowSize; 
   
-	textureBackground_Image.setSmooth(true);
-	textureBackgroundSize = textureBackground_Image.getSize();
+	textureBackgroundImage.setSmooth(true);
+	textureBackgroundSize = textureBackgroundImage.getSize();
 	windowSize = window.getSize(); 
 	float ScaleX = (float) windowSize.x / textureBackgroundSize.x;
     float ScaleY = (float) windowSize.y / textureBackgroundSize.y;   
 
-    sf::Sprite spriteBackground_Image(textureBackground_Image);
-    spriteBackground_Image.setScale(ScaleX, ScaleY); 
+	//final UI menu
+    sf::Sprite spriteBackgroundImage(textureBackgroundImage);
+    spriteBackgroundImage.setScale(ScaleX, ScaleY); 
     
+    textureBackgroundSize = textureFinalMenu.getSize();
+    ScaleX = (float) windowSize.x / textureBackgroundSize.x;
+    ScaleY = (float) windowSize.y / textureBackgroundSize.y;   
+    sf::Sprite spriteFinalMenu(textureFinalMenu);
+    spriteFinalMenu.setScale(ScaleX/2, ScaleY/2); 
+    spriteFinalMenu.setPosition(windowSize.x / 2 - textureBackgroundSize.x - textureBackgroundSize.x/4, windowSize.y / 2 - textureBackgroundSize.y/2); 
     
 	sf::Font font;
 	if (!font.loadFromFile("resource/mk2.ttf"))
@@ -100,38 +115,56 @@ int main()
 	int plays = 0;
 	bool flagPlay = false;
 	
-	//Setting the UI
-	sf::Text textStart,	textCreditsIn, textCreditsOut, textCredits, textCoin;
-	textStart.setFont(font); // font is a sf::Font
+	//Setting the UI in pixels, not points
+	sf::Text textStart,	textCreditsIn, textCreditsOut, textCredits, textCoin,textWinners,text1,text2,text3;
+	textStart.setFont(font); 
 	textStart.setString("PLAY: " + to_string(plays));
-	textStart.setCharacterSize(30); // in pixels, not points!
+	textStart.setCharacterSize(75); 
 	textStart.setFillColor(sf::Color::White);
 	textStart.setStyle(sf::Text::Bold);
-	textStart.setPosition(100.f, 475.f);
+	textStart.setPosition(windowSize.x/2 - 100, windowSize.y/2 );
 	
 	textCreditsIn = textStart;
 	textCreditsIn.setString("B TO INSERT CREDITS");
-	textCreditsIn.setCharacterSize(20);
+	textCreditsIn.setCharacterSize(40);
 	textCreditsIn.setStyle(sf::Text::Regular);
-	textCreditsIn.setPosition(75.f, 525.f);
+	textCreditsIn.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 75);
 	
 	textCreditsOut = textStart;
 	textCreditsOut.setString("R TO RETRIEVE CREDITS");
-	textCreditsOut.setCharacterSize(20);
+	textCreditsOut.setCharacterSize(40);
 	textCreditsOut.setStyle(sf::Text::Regular);
-	textCreditsOut.setPosition(75.f, 550.f);
+	textCreditsOut.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 115);
 
 	textCredits = textStart;
 	textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
-	textCredits.setCharacterSize(20);
+	textCredits.setCharacterSize(40);
 	textCredits.setStyle(sf::Text::Regular);	
-	textCredits.setPosition(75.f, 575.f);
+	textCredits.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 155);
 	
 	textCoin = textStart;
 	textCoin.setString("INSERT COIN");
 	textCoin.setStyle(sf::Text::Regular);
-	textCoin.setPosition(90.f, 615.f);
+	textCoin.setPosition(windowSize.x/2 - 110, windowSize.y/2 + 180);
+
+	textWinners = textStart;
+	textWinners.setCharacterSize(55);
+	textWinners.setPosition(windowSize.x / 2 - textureBackgroundSize.x + 150, windowSize.y / 2 - textureBackgroundSize.y/2 + 60);
 	
+	//https://github.com/skyrpex/RichText
+	text1 = textWinners;
+	text1.setString("1#");
+	//https://www.schemecolor.com/gold-silver-and-bronze-color-palette.php
+	text1.setFillColor(sf::Color(218,165,32,255));
+	text2 = text1;
+	text2.setString("2#");
+	text2.setPosition(textWinners.getPosition() + sf::Vector2f(0,63));
+	text2.setFillColor(sf::Color(117,117,117,255));
+	text3 = textWinners;
+	text3.setString("3#");
+	text3.setPosition(textWinners.getPosition()+ sf::Vector2f(0,126));
+	text3.setFillColor(sf::Color(205,127,50,255));
+		
 	//defining the map (done previously using mouse click event to find coordinates
 	Mapfarm mapList;
 	
@@ -273,9 +306,9 @@ int main()
 
         window.clear();
 
-		window.draw(spriteBackground_Image);
+		window.draw(spriteBackgroundImage);
 		
-		if(!flagPlay)
+		if(!flagPlay && placeRace.size() < 6)
 		{
 			window.draw(textStart);
 			window.draw(textCreditsIn);
@@ -286,14 +319,22 @@ int main()
 		
 		if( placeRace.size() == 6)
 		{
-			raceResults(placeRace,playerMap);
+			string auxWinner = raceResults(placeRace,playerMap);
+			cout << auxWinner << endl;
+			textWinners.setString(auxWinner);
 			flagPlay = false;
-			placeRace.clear();
+			/*placeRace.clear();
 			for(int i=0;i<=6;i++)
 			{
 				spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + i*100);
 				spriteList[i].currentWaypoint = 1;			
 			}
+			*/
+			window.draw(spriteFinalMenu);
+			window.draw(textWinners);
+			window.draw(text1);
+			window.draw(text2);
+			window.draw(text3);
 		}
 		
 		if(flagPlay)
@@ -333,7 +374,7 @@ int main()
 				//cout << distance << endl;
 				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
 				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
-				spriteList[i].x.move( spriteList[i].v * direction.x, spriteList[i].v  * direction.y );
+				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY  * direction.y );
 
 				window.draw(spriteList[i].x);			
 			}
