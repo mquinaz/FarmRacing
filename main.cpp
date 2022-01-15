@@ -193,6 +193,15 @@ int main()
 		spriteList[i-1].x = spriteCharacter;
 		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y + (i-1)*100);
 		spriteList[i-1].currentWaypoint = 1;
+		
+		//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+		random_device dev;
+		mt19937 rng(dev());
+		uniform_int_distribution<mt19937::result_type> dist6(0,10); // distribution in range [0, 10]
+		float velS = 0.1 + dist6(rng) * 0.01;
+		cout << velS << endl;
+		
+		spriteList[i-1].v = velS;
 	}
 	
 	
@@ -252,7 +261,6 @@ int main()
 					textStart.setString("PLAY: " + to_string(plays));
 					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 			
-					//if possible improve this method - https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
 					//player that is not playing this round
 					random_device dev;
 					mt19937 rng(dev());
@@ -325,7 +333,7 @@ int main()
 				//cout << distance << endl;
 				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
 				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
-				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
+				spriteList[i].x.move( spriteList[i].v * direction.x, spriteList[i].v  * direction.y );
 
 				window.draw(spriteList[i].x);			
 			}
