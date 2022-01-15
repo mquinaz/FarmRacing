@@ -9,8 +9,8 @@
 #define PRICEPLAY 1
 #define SIZESPRITES 7
 #define DURATIONANIMATION 0.1
-#define VELOCITY 0.1
-#define RADIUS 500
+#define VELOCITY 0.15
+#define RADIUS 25
 
 using namespace std;
 
@@ -18,7 +18,6 @@ struct Player
 {
 	vector<sf::Texture> frames;
 	int size,currentFrame,currentWaypoint;
-	float coordX,coordY;
 	sf::Sprite x;
 };
 
@@ -31,9 +30,9 @@ struct Mapfarm
 //https://github.com/wagnrd/SFMLMath/blob/master/src/SFMLMath.hpp 
 sf::Vector2f normalize(sf::Vector2f vec)
 {
-	const double length = sqrt((vec.x * vec.x) + (vec.y * vec.y));
-    const double newX   = vec.x / length;
-    const double newY   = vec.y / length;
+	float length = sqrt((vec.x * vec.x) + (vec.y * vec.y) );
+    float newX   = vec.x / length;
+    float newY   = vec.y / length;
     return sf::Vector2f(newX,newY);
 }
 
@@ -190,9 +189,7 @@ int main()
 		spriteList[i-1].currentFrame = 0;
 		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
-		spriteList[i-1].coordX = waypointList[0].x;
-		spriteList[i-1].coordY = waypointList[0].y;
-		spriteList[i-1].x.move( spriteList[i-1].coordX , spriteList[i-1].coordY);
+		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y );
 		spriteList[i-1].currentWaypoint = 1;
 	}
 	
@@ -293,18 +290,19 @@ int main()
 				if( i == playerOut )
 					continue;
 				
-				sf::Vector2f direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
-				if( direction.x + direction.y > RADIUS)
-				{	
+				double distance = sqrt( 
+				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
+				(spriteList[i].x.getPosition().y - waypointList[ spriteList[i].currentWaypoint ].y )*(spriteList[i].x.getPosition().y - waypointList[ spriteList[i].currentWaypoint ].y) ); 
+				if( distance < RADIUS)
 					spriteList[i].currentWaypoint++;
-					 direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
-					//spriteList[i].x.move( 0.1 , 0);
-				}
-				cout <<  direction.x << " " <<  direction.y;
-				//spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
-				spriteList[i].coordX += VELOCITY * direction.x;
-				spriteList[i].coordY += VELOCITY * direction.y;
-				spriteList[i].x.move( spriteList[i].coordX, spriteList[i].coordY );
+				
+				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() );
+				
+				//cout << distance << endl;
+				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
+				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
+				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
+
 				window.draw(spriteList[i].x);			
 			}
 			//flagPlay = false;
