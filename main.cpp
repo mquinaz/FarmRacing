@@ -5,6 +5,7 @@
 #include <random>
 #include <unistd.h>
 #include <math.h>
+#include <map>
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
@@ -34,6 +35,15 @@ sf::Vector2f normalize(sf::Vector2f vec)
     float newX   = vec.x / length;
     float newY   = vec.y / length;
     return sf::Vector2f(newX,newY);
+}
+
+void raceResults(vector<int> results, map<int, string> playerMap)
+{
+	cout << "###Results of the race###"<< endl << endl;
+	for(int i=0;i<6;i++)
+	{
+		cout << to_string(i+1) + " place: " + playerMap[ results[i] ] << endl;;
+	}		
 }
 
 int main()
@@ -137,10 +147,22 @@ int main()
 	waypointList.push_back( sf::Vector2f( 1757,298) );
 	waypointList.push_back( sf::Vector2f( 1844,297) );
 	
-	
+	map<int, string> playerMap = {
+    { 0, "cat" },
+    { 1, "dog" },
+    { 2, "dragon" },
+    { 3, "pony" },
+    { 4, "ram" },
+    { 5, "sheep" },
+    { 6, "tiger" }
+	};
+
 	Player spriteList[SIZESPRITES];	
 	sf::Texture spriteTextures;
 	sf::Sprite spriteCharacter;
+	
+	vector<int> placeRace;
+	
 	//In here we fill the struct by reading all images and assigning them to a vector of textures and assigning the first of these to a sprite
 	for(int i=1;i<=SIZESPRITES;i++)
 	{
@@ -256,11 +278,27 @@ int main()
         window.clear();
 
 		window.draw(spriteBackground_Image);
-        window.draw(textStart);
-		window.draw(textCreditsIn);
-		window.draw(textCreditsOut);
-		window.draw(textCredits);
-		window.draw(textCoin);
+		
+		if(!flagPlay)
+		{
+			window.draw(textStart);
+			window.draw(textCreditsIn);
+			window.draw(textCreditsOut);
+			window.draw(textCredits);
+			window.draw(textCoin);
+		}
+		
+		if( placeRace.size() == 6)
+		{
+			raceResults(placeRace,playerMap);
+			flagPlay = false;
+			placeRace.clear();
+			for(int i=0;i<=6;i++)
+			{
+				spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + i*100);
+				spriteList[i].currentWaypoint = 1;			
+			}
+		}
 		
 		if(flagPlay)
 		{	
@@ -286,8 +324,14 @@ int main()
 				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
 				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100))  ); 
 				if( distance < RADIUS)
-					spriteList[i].currentWaypoint++;
-				
+				{
+					spriteList[i].currentWaypoint++;	
+					if( spriteList[i].currentWaypoint >= waypointList.size() )
+					{
+						placeRace.push_back(i);
+						continue;
+					}
+				}
 				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,i*100) );
 				
 				//cout << distance << endl;
@@ -297,7 +341,6 @@ int main()
 
 				window.draw(spriteList[i].x);			
 			}
-			//flagPlay = false;
 		}
 
 		
