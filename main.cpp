@@ -4,17 +4,18 @@
 #include <string>
 #include <random>
 #include <unistd.h>
+#include <math.h>
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
 #define DURATIONANIMATION 0.1
-
+#define VELOCITY 0.1
 using namespace std;
 
 struct Player
 {
 	vector<sf::Texture> frames;
-	int size,currentFrame;
+	int size,currentFrame,currentWaypoint;
 	sf::Sprite x;
 };
 
@@ -22,6 +23,16 @@ struct Mapfarm
 {
 	 vector< pair <int,int> > coords;
 };
+
+//can improve the next function
+//https://github.com/wagnrd/SFMLMath/blob/master/src/SFMLMath.hpp 
+sf::Vector2f normalize(sf::Vector2f vec)
+{
+	const double length = sqrt((vec.x * vec.x) + (vec.y * vec.y));
+    const double newX   = vec.x / length;
+    const double newY   = vec.y / length;
+    return sf::Vector2f(newX,newY);
+}
 
 int main()
 {	
@@ -109,11 +120,29 @@ int main()
 	
 	//defining the map (done previously using mouse click event to find coordinates
 	Mapfarm mapList;
-	mapList.coords.push_back( make_pair( 30,350) );
-	mapList.coords.push_back( make_pair( 30,450) );
-	mapList.coords.push_back( make_pair( 30,550) );
-	mapList.coords.push_back( make_pair( 30,650) );
-	mapList.coords.push_back( make_pair( 30,750) );
+	
+	mapList.coords.push_back( make_pair( 30,400) );
+	mapList.coords.push_back( make_pair( 30,500) );
+	mapList.coords.push_back( make_pair( 30,600) );
+	mapList.coords.push_back( make_pair( 30,700) );
+	mapList.coords.push_back( make_pair( 30,800) );
+	mapList.coords.push_back( make_pair( 30,900) );
+	
+	
+	vector < sf::Vector2f> waypointList; 
+	waypointList.push_back( sf::Vector2f( 46,403) );
+	waypointList.push_back( sf::Vector2f( 175,384) );
+	waypointList.push_back( sf::Vector2f( 421,420) );
+	waypointList.push_back( sf::Vector2f( 588,433) );
+	waypointList.push_back( sf::Vector2f( 741,416) );
+	waypointList.push_back( sf::Vector2f( 961,388) );
+	waypointList.push_back( sf::Vector2f( 1134,404) );
+	waypointList.push_back( sf::Vector2f( 1287,410) );
+	waypointList.push_back( sf::Vector2f( 1457,425) );
+	waypointList.push_back( sf::Vector2f( 1587,410) );
+	waypointList.push_back( sf::Vector2f( 1757,398) );
+	waypointList.push_back( sf::Vector2f( 1844,397) );
+	
 	
 	Player spriteList[SIZESPRITES];	
 	sf::Texture spriteTextures;
@@ -159,6 +188,7 @@ int main()
 		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
 		spriteList[i-1].x.move( mapList.coords[i-1].first , mapList.coords[i-1].second);
+		spriteList[i-1].currentWaypoint = 0;
 	}
 	
 	
@@ -241,7 +271,7 @@ int main()
 		if(flagPlay)
 		{	
 			elapsedPlay = playClock.getElapsedTime();
-			cout << elapsedPlay.asSeconds() << endl;
+			//cout << elapsedPlay.asSeconds() << endl;
 			if( DURATIONANIMATION <= elapsedPlay.asSeconds() )
 			{
 				for(int i=0;i<=6;i++)
@@ -258,7 +288,10 @@ int main()
 				if( i == playerOut )
 					continue;
 
-				spriteList[i].x.move( 0.1 , 0);
+				sf::Vector2f direction = normalize( spriteList[i].x.getPosition() - waypointList[ spriteList[i].currentWaypoint ] );
+				//spriteList[i].x.move( 0.1 , 0);
+				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY * direction.y );
+				
 				window.draw(spriteList[i].x);			
 			}
 			//flagPlay = false;
