@@ -19,6 +19,7 @@ struct Player
 {
 	vector<sf::Texture> frames;
 	int size,currentFrame,currentWaypoint;
+	float v;
 	sf::Sprite x;
 };
 
@@ -44,6 +45,7 @@ void raceResults(vector<int> results, map<int, string> playerMap)
 	{
 		cout << to_string(i+1) + " place: " + playerMap[ results[i] ] << endl;;
 	}		
+	cout << endl;
 }
 
 int main()
@@ -168,24 +170,10 @@ int main()
 	{
 		string fileSpriteNameBeggining = "resource/";
 		//j is the number of frames (6 and 4 in dragon case), they are -- to later on use %
-		int j=5;
-		if(i == 1)
-			fileSpriteNameBeggining += "cat";
-		if(i == 2)
-			fileSpriteNameBeggining += "dog";			
-		if(i == 3)
-		{
-			fileSpriteNameBeggining += "dragon";
-			j = 3;
-		}
-		if(i == 4)
-			fileSpriteNameBeggining += "pony";
-		if(i == 5)
-			fileSpriteNameBeggining += "ram";
-		if(i == 6)
-			fileSpriteNameBeggining += "sheep";
-		if(i == 7)
-			fileSpriteNameBeggining += "tiger";
+		int j=6;
+		fileSpriteNameBeggining += playerMap[i-1];
+		if( i == 3)
+			j=4;
 		
 		spriteList[i-1].size = j;
 		for(int k=0;k<j;k++)
