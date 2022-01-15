@@ -8,7 +8,7 @@
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
-#define DURATIONANIMATION 0.1
+#define DURATIONANIMATION 0.08
 #define VELOCITY 0.15
 #define RADIUS 25
 
@@ -26,11 +26,11 @@ struct Mapfarm
 	 vector< pair <int,int> > coords;
 };
 
-//can improve the next function
-//https://github.com/wagnrd/SFMLMath/blob/master/src/SFMLMath.hpp 
+
 sf::Vector2f normalize(sf::Vector2f vec)
 {
-	float length = sqrt((vec.x * vec.x) + (vec.y * vec.y) );
+	
+	float length = sqrt((vec.x * vec.x) + ( vec.y * vec.y) );
     float newX   = vec.x / length;
     float newY   = vec.y / length;
     return sf::Vector2f(newX,newY);
@@ -123,27 +123,19 @@ int main()
 	//defining the map (done previously using mouse click event to find coordinates
 	Mapfarm mapList;
 	
-	mapList.coords.push_back( make_pair( 30,400) );
-	mapList.coords.push_back( make_pair( 30,500) );
-	mapList.coords.push_back( make_pair( 30,600) );
-	mapList.coords.push_back( make_pair( 30,700) );
-	mapList.coords.push_back( make_pair( 30,800) );
-	mapList.coords.push_back( make_pair( 30,900) );
-	
-	
 	vector < sf::Vector2f> waypointList; 
-	waypointList.push_back( sf::Vector2f( 46,403) );
-	waypointList.push_back( sf::Vector2f( 175,384) );
-	waypointList.push_back( sf::Vector2f( 421,420) );
-	waypointList.push_back( sf::Vector2f( 588,433) );
-	waypointList.push_back( sf::Vector2f( 741,416) );
-	waypointList.push_back( sf::Vector2f( 961,388) );
-	waypointList.push_back( sf::Vector2f( 1134,404) );
-	waypointList.push_back( sf::Vector2f( 1287,410) );
-	waypointList.push_back( sf::Vector2f( 1457,425) );
-	waypointList.push_back( sf::Vector2f( 1587,410) );
-	waypointList.push_back( sf::Vector2f( 1757,398) );
-	waypointList.push_back( sf::Vector2f( 1844,397) );
+	waypointList.push_back( sf::Vector2f( 46,303) );
+	waypointList.push_back( sf::Vector2f( 175,284) );
+	waypointList.push_back( sf::Vector2f( 421,320) );
+	waypointList.push_back( sf::Vector2f( 588,333) );
+	waypointList.push_back( sf::Vector2f( 741,316) );
+	waypointList.push_back( sf::Vector2f( 961,288) );
+	waypointList.push_back( sf::Vector2f( 1134,304) );
+	waypointList.push_back( sf::Vector2f( 1287,310) );
+	waypointList.push_back( sf::Vector2f( 1457,325) );
+	waypointList.push_back( sf::Vector2f( 1587,310) );
+	waypointList.push_back( sf::Vector2f( 1757,298) );
+	waypointList.push_back( sf::Vector2f( 1844,297) );
 	
 	
 	Player spriteList[SIZESPRITES];	
@@ -189,7 +181,7 @@ int main()
 		spriteList[i-1].currentFrame = 0;
 		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
-		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y );
+		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y + (i-1)*100);
 		spriteList[i-1].currentWaypoint = 1;
 	}
 	
@@ -292,11 +284,11 @@ int main()
 				
 				double distance = sqrt( 
 				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
-				(spriteList[i].x.getPosition().y - waypointList[ spriteList[i].currentWaypoint ].y )*(spriteList[i].x.getPosition().y - waypointList[ spriteList[i].currentWaypoint ].y) ); 
+				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100))  ); 
 				if( distance < RADIUS)
 					spriteList[i].currentWaypoint++;
 				
-				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() );
+				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,i*100) );
 				
 				//cout << distance << endl;
 				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
