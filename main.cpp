@@ -128,24 +128,24 @@ int main()
 	textCreditsIn.setString("B TO INSERT CREDITS");
 	textCreditsIn.setCharacterSize(40);
 	textCreditsIn.setStyle(sf::Text::Regular);
-	textCreditsIn.setPosition(textCreditsIn.getPosition()+ sf::Vector2f(-25,90));
+	textCreditsIn.setPosition(textCreditsIn.getPosition()+ sf::Vector2f(-50,90));
 	
 	textCreditsOut = textStart;
 	textCreditsOut.setString("R TO RETRIEVE CREDITS");
 	textCreditsOut.setCharacterSize(40);
 	textCreditsOut.setStyle(sf::Text::Regular);
-	textCreditsOut.setPosition(textCreditsOut.getPosition()+ sf::Vector2f(-25,125));
+	textCreditsOut.setPosition(textCreditsOut.getPosition()+ sf::Vector2f(-75,160));
 
 	textCredits = textStart;
 	textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 	textCredits.setCharacterSize(40);
 	textCredits.setStyle(sf::Text::Regular);	
-	textCredits.setPosition(textCredits.getPosition()+ sf::Vector2f(-25,160));
+	textCredits.setPosition(textCredits.getPosition()+ sf::Vector2f(-125,125));
 	
 	textCoin = textStart;
 	textCoin.setString("INSERT COIN");
 	textCoin.setStyle(sf::Text::Regular);
-	textCoin.setPosition(textCoin.getPosition()+ sf::Vector2f(0,200));
+	textCoin.setPosition(textCoin.getPosition()+ sf::Vector2f(-75,225));
 
 	textWinners = textStart;
 	textWinners.setCharacterSize(55);
@@ -192,6 +192,8 @@ int main()
     { 6, "tiger" }
 	};
 
+	map<int, int> playerPosition;
+
 	Player spriteList[SIZESPRITES];	
 	sf::Texture spriteTextures;
 	sf::Sprite spriteCharacter;
@@ -223,7 +225,6 @@ int main()
 		sf::Sprite spriteCharacter( spriteList[i-1].frames[0] );
 		spriteList[i-1].currentFrame = 0;
 		spriteList[i-1].x = spriteCharacter;
-		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y + (i-1)*100);
 		spriteList[i-1].currentWaypoint = 1;
 		
 		//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
@@ -299,6 +300,19 @@ int main()
 					uniform_int_distribution<mt19937::result_type> dist6(0,6); // distribution in range [0, 6]
 					playerOut = dist6(rng);
 					cout << playerOut << endl;	
+					
+					//setting up player position so that is not a hole when a player is left out
+					int playerOutAux[] = {0,100,200,300,400,500};
+					int playerOutIndexAux = 0;
+					for(int i=0;i<=6;i++)
+					{
+						if( i == playerOut)
+							continue;
+							
+						playerPosition.insert({i,playerOutAux[playerOutIndexAux]});
+						spriteList[i].x.move( waypointList[0].x , waypointList[0].y + playerPosition[i]);
+						playerOutIndexAux++;
+					}
 				}
 			}
         }
@@ -358,7 +372,7 @@ int main()
 					
 				double distance = sqrt( 
 				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
-				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100))  ); 
+				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + playerPosition[i]) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + playerPosition[i]))  ); 
 				if( distance < RADIUS)
 				{
 					spriteList[i].currentWaypoint++;	
@@ -368,7 +382,7 @@ int main()
 						continue;
 					}
 				}
-				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,i*100) );
+				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,playerPosition[i]) );
 				
 				//cout << distance << endl;
 				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
