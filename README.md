@@ -39,3 +39,6 @@ g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 makefile - bug
 
 https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
+cmake .. & make works on Linux which uses Makefiles but may not work on Windows which won't be using Makefiles. The two commands above work on any OS since they're more generic.
+cmake -B build configures the project and puts all the files into a directory called build.
+cmake --build build builds the project which was configured into the build directory.
