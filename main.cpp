@@ -10,7 +10,7 @@
 #define PRICEPLAY 1
 #define SIZESPRITES 7
 #define DURATIONANIMATION 0.08
-#define VELOCITY 0.5
+#define VELOCITY 0.035
 #define RADIUS 25
 
 using namespace std;
@@ -19,13 +19,8 @@ struct Player
 {
 	vector<sf::Texture> frames;
 	int size,currentFrame,currentWaypoint;
-	float v;
+	float v,spriteV;
 	sf::Sprite x;
-};
-
-struct Mapfarm
-{
-	 vector< pair <int,int> > coords;
 };
 
 
@@ -55,7 +50,7 @@ int main()
     //VideoMode::getDesktopMode(): with the window decorations (borders and titlebar) added, you end up with a window which is slightly bigger than the desktop.
     
 	sf::Clock programClock,playClock; 
-    sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Horse Racing");
+    sf::RenderWindow window(sf::VideoMode(sf::VideoMode::getDesktopMode().width, sf::VideoMode::getDesktopMode().height), "Farm Racing");
     //window.setVerticalSyncEnabled(true);  //application will run same frequency of monitor's refresh rate
          	
 	sf::Texture textureFinalMenu;
@@ -152,6 +147,7 @@ int main()
 	textWinners.setPosition(windowSize.x / 2 - textureBackgroundSize.x + 150, windowSize.y / 2 - textureBackgroundSize.y/2 + 60);
 	
 	//https://github.com/skyrpex/RichText
+	//this texts are used for coloring the 1 2 and 3 place with colors
 	text1 = textWinners;
 	text1.setString("1#");
 	//https://www.schemecolor.com/gold-silver-and-bronze-color-palette.php
@@ -165,9 +161,7 @@ int main()
 	text3.setPosition(textWinners.getPosition()+ sf::Vector2f(0,126));
 	text3.setFillColor(sf::Color(205,127,50,255));
 		
-	//defining the map (done previously using mouse click event to find coordinates
-	Mapfarm mapList;
-	
+	//defining the map (done previously using mouse click event to find coordinates	
 	vector < sf::Vector2f> waypointList; 
 	waypointList.push_back( sf::Vector2f( 46,303) );
 	waypointList.push_back( sf::Vector2f( 175,284) );
@@ -182,6 +176,7 @@ int main()
 	waypointList.push_back( sf::Vector2f( 1757,298) );
 	waypointList.push_back( sf::Vector2f( 1844,297) );
 	
+	//used to show winners in a prettier way
 	map<int, string> playerMap = {
     { 0, "cat" },
     { 1, "dog" },
@@ -192,6 +187,7 @@ int main()
     { 6, "tiger" }
 	};
 
+	//used to assign a y axis variation of waypoint to a playing character
 	map<int, int> playerPosition;
 
 	Player spriteList[SIZESPRITES];	
@@ -226,15 +222,7 @@ int main()
 		spriteList[i-1].currentFrame = 0;
 		spriteList[i-1].x = spriteCharacter;
 		spriteList[i-1].currentWaypoint = 1;
-		
-		//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
-		random_device dev;
-		mt19937 rng(dev());
-		uniform_int_distribution<mt19937::result_type> dist6(0,10); // distribution in range [0, 10]
-		float velS = 0.3 + dist6(rng) * 0.01;
-		cout << velS << endl;
-		
-		spriteList[i-1].v = velS;
+		spriteList[i-1].spriteV = 0;
 	}
 	
 	
@@ -248,6 +236,8 @@ int main()
 			{
             if (event.type == sf::Event::Closed)
                 window.close();
+            
+            //this event helped in finding positions to create waypoints
             if( event.type == sf::Event::MouseButtonPressed)
             {
 				cout << "Button " << event.mouseButton.button << " @ "
@@ -255,6 +245,7 @@ int main()
                      << sf::Mouse::getPosition(window).y << endl;
 			}
 			
+			//if we are at the final menu (size==6) lets reset the placeRace to play again
 			if (event.key.code == sf::Keyboard::Enter && placeRace.size() == 6)
 			{
 				placeRace.clear();
@@ -265,6 +256,7 @@ int main()
 				continue;
 			}
 			
+			//disabling initial menu during a play
             if(flagPlay)
 				break;
 				
@@ -275,7 +267,6 @@ int main()
 					std::cout << "the B key was pressed" << std::endl;
 					creditsIn++;
 					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
-					spriteList[4].x.setTexture(spriteList[4].frames[3]);
 				}
 				if (event.key.code == sf::Keyboard::R)
 				{
@@ -321,6 +312,15 @@ int main()
 						playerPosition.insert({i,playerOutAux[playerOutIndexAux]});
 						spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + playerPosition[i]);
 						playerOutIndexAux++;
+								
+						//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
+						random_device dev;
+						mt19937 rng(dev());
+						uniform_int_distribution<mt19937::result_type> dist6(0,10); // distribution in range [0, 10]
+						float velS = 0.3 + dist6(rng) * 0.01;
+						cout << velS << endl;
+						
+						spriteList[i].v = velS;
 					}
 					
 					flagPlay = true;
@@ -332,6 +332,7 @@ int main()
 
 		window.draw(spriteBackgroundImage);
 		
+		//if we are doing a play don't show initial menu
 		if(!flagPlay && placeRace.size() < 6)
 		{
 			window.draw(textStart);
@@ -341,8 +342,12 @@ int main()
 			window.draw(textCoin);
 		}
 		
+		//if all of the playing characters finished the race, show end menu and calculate the winners
 		if( placeRace.size() == 6)
 		{
+			elapsedPlay = playClock.getElapsedTime();
+			cout << elapsedPlay.asSeconds() << endl;
+			
 			string auxWinner = raceResults(placeRace,playerMap);
 			cout << auxWinner << endl;
 			textWinners.setString(auxWinner);
@@ -355,21 +360,27 @@ int main()
 			window.draw(text3);
 		}
 		
+		//if we pressed enter
 		if(flagPlay)
 		{	
-			elapsedPlay = playClock.getElapsedTime();
-			//cout << elapsedPlay.asSeconds() << endl;
-			if( DURATIONANIMATION <= elapsedPlay.asSeconds() )
+			//change sprites of the playing characters based on play
+			for(int i=0;i<=6;i++)
 			{
-				for(int i=0;i<=6;i++)
+				if( i == playerOut)
+					continue;
+				
+				//velocity is in the order of magnitude [0.3-0.4] while sprite change speed looks ok at [0.03-0.04]	
+				spriteList[i].spriteV += spriteList[i].v*0.1;
+				int currentFrameAux = (spriteList[i].currentFrame + int(spriteList[i].spriteV)) % spriteList[i].size;
+				if( spriteList[i].currentFrame != currentFrameAux)
 				{
-					int currentFrameAux = (spriteList[i].currentFrame + 1) % spriteList[i].size;
 					spriteList[i].currentFrame = currentFrameAux;
 					spriteList[i].x.setTexture( spriteList[i].frames[ spriteList[i].currentFrame ] );
+					spriteList[i].spriteV = 0;
 				}
-				elapsedPlay = playClock.restart();
 			}
-			
+		
+			//for any playing character we see the distance to his next waypoint, if its close we make him go to the next one
 			for(int i=0;i<=6;i++)
 			{				
 				if( spriteList[i].currentWaypoint >=  waypointList.size() || i == playerOut)
@@ -381,12 +392,14 @@ int main()
 				if( distance < RADIUS)
 				{
 					spriteList[i].currentWaypoint++;	
+					//if a character finished a race put him in placeRace list
 					if( spriteList[i].currentWaypoint >= waypointList.size() )
 					{
 						placeRace.push_back(i);
 						continue;
 					}
 				}
+				//we need a unit vector so we can have small movement
 				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,playerPosition[i]) );
 				
 				//cout << distance << endl;

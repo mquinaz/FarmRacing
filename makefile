@@ -1,5 +1,3 @@
-#https://www.embarcados.com.br/introducao-ao-makefile/
-
 #http://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html
 CXX      := -g++
 CXXFLAGS := -std=c++14 -Wall
@@ -7,10 +5,10 @@ CXXFLAGS := -std=c++14 -Wall
 LDFLAGS  := -L/usr/lib -lstdc++ -lsfml-system -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 BUILD    := ./build
 OBJ_DIR  := $(BUILD)/objects
-APP_DIR  := $(BUILD)/apps
-TARGET   := program
+APP_DIR  := $(BUILD)/
+TARGET   := farmrace
 INCLUDE  := -Iinclude/
-SRC      := $(wildcard src/engine/*.cpp) $(wildcard src/*.cpp)
+SRC      := $(wildcard *.cpp) 
 OBJECTS  := $(SRC:%.cpp=$(OBJ_DIR)/%.o)
 
 all: build $(APP_DIR)/$(TARGET)
