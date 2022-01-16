@@ -30,18 +30,20 @@ Edited with Gimp for cropping and https://www2.lunapic.com/editor/ to remove bac
 
 ## C++ game development challenge
 
-To compile:
+For now the game only works at linux with:
 
-g++ -c main.cpp
+### g++ -c main.cpp
 
-g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+### g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-makefile - bug
+or using CMake:
+
+### cmake -B build
+
+### cmake --build build
+
+And moving the resources folder to the build folder
+
+he makefile has a bug
 
 https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
-
-cmake .. & make works on Linux which uses Makefiles but may not work on Windows which won't be using Makefiles. The two commands above work on any OS since they're more generic.
-
-cmake -B build configures the project and puts all the files into a directory called build.
-
-cmake --build build builds the project which was configured into the build directory.
