@@ -122,30 +122,30 @@ int main()
 	textStart.setCharacterSize(75); 
 	textStart.setFillColor(sf::Color::White);
 	textStart.setStyle(sf::Text::Bold);
-	textStart.setPosition(windowSize.x/2 - 100, windowSize.y/2 );
+	textStart.setPosition(windowSize.x/2 - textStart.getLocalBounds().width/2 - 40, windowSize.y/2 - 100 );
 	
 	textCreditsIn = textStart;
 	textCreditsIn.setString("B TO INSERT CREDITS");
 	textCreditsIn.setCharacterSize(40);
 	textCreditsIn.setStyle(sf::Text::Regular);
-	textCreditsIn.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 75);
+	textCreditsIn.setPosition(textCreditsIn.getPosition()+ sf::Vector2f(-25,90));
 	
 	textCreditsOut = textStart;
 	textCreditsOut.setString("R TO RETRIEVE CREDITS");
 	textCreditsOut.setCharacterSize(40);
 	textCreditsOut.setStyle(sf::Text::Regular);
-	textCreditsOut.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 115);
+	textCreditsOut.setPosition(textCreditsOut.getPosition()+ sf::Vector2f(-25,125));
 
 	textCredits = textStart;
 	textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
 	textCredits.setCharacterSize(40);
 	textCredits.setStyle(sf::Text::Regular);	
-	textCredits.setPosition(windowSize.x/2 - 125, windowSize.y/2 + 155);
+	textCredits.setPosition(textCredits.getPosition()+ sf::Vector2f(-25,160));
 	
 	textCoin = textStart;
 	textCoin.setString("INSERT COIN");
 	textCoin.setStyle(sf::Text::Regular);
-	textCoin.setPosition(windowSize.x/2 - 110, windowSize.y/2 + 180);
+	textCoin.setPosition(textCoin.getPosition()+ sf::Vector2f(0,200));
 
 	textWinners = textStart;
 	textWinners.setCharacterSize(55);
@@ -222,7 +222,6 @@ int main()
 		}
 		sf::Sprite spriteCharacter( spriteList[i-1].frames[0] );
 		spriteList[i-1].currentFrame = 0;
-		//spriteList[i-1].frames[i].setScale(ScaleX, ScaleY); 
 		spriteList[i-1].x = spriteCharacter;
 		spriteList[i-1].x.move( waypointList[0].x , waypointList[0].y + (i-1)*100);
 		spriteList[i-1].currentWaypoint = 1;
@@ -231,7 +230,7 @@ int main()
 		random_device dev;
 		mt19937 rng(dev());
 		uniform_int_distribution<mt19937::result_type> dist6(0,10); // distribution in range [0, 10]
-		float velS = 0.1 + dist6(rng) * 0.01;
+		float velS = 0.3 + dist6(rng) * 0.01;
 		cout << velS << endl;
 		
 		spriteList[i-1].v = velS;
@@ -353,10 +352,10 @@ int main()
 			}
 			
 			for(int i=0;i<=6;i++)
-			{
-				if( i == playerOut )
+			{				
+				if( spriteList[i].currentWaypoint >=  waypointList.size() || i == playerOut)
 					continue;
-				
+					
 				double distance = sqrt( 
 				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
 				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + i*100))  ); 
@@ -374,8 +373,9 @@ int main()
 				//cout << distance << endl;
 				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
 				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
-				spriteList[i].x.move( VELOCITY * direction.x, VELOCITY  * direction.y );
+				spriteList[i].x.move( spriteList[i].v * direction.x, spriteList[i].v  * direction.y );
 
+				spriteList[i].x.setScale(sf::Vector2f(2,2)); 
 				window.draw(spriteList[i].x);			
 			}
 		}
