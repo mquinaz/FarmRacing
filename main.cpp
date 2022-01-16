@@ -74,19 +74,19 @@ int main()
 	textureBackgroundImage.setSmooth(true);
 	textureBackgroundSize = textureBackgroundImage.getSize();
 	windowSize = window.getSize(); 
-	float ScaleX = (float) windowSize.x / textureBackgroundSize.x;
-    float ScaleY = (float) windowSize.y / textureBackgroundSize.y;   
+	float ScaleX = (float) windowSize.x / (float) textureBackgroundSize.x;
+    float ScaleY = (float) windowSize.y / (float) textureBackgroundSize.y;   
 
 	//final UI menu
     sf::Sprite spriteBackgroundImage(textureBackgroundImage);
     spriteBackgroundImage.setScale(ScaleX, ScaleY); 
     
     textureBackgroundSize = textureFinalMenu.getSize();
-    ScaleX = (float) windowSize.x / textureBackgroundSize.x;
-    ScaleY = (float) windowSize.y / textureBackgroundSize.y;   
+    ScaleX = (float) windowSize.x / (float) textureBackgroundSize.x;
+    ScaleY = (float) windowSize.y / (float) textureBackgroundSize.y;   
     sf::Sprite spriteFinalMenu(textureFinalMenu);
     spriteFinalMenu.setScale(ScaleX/2, ScaleY/2); 
-    spriteFinalMenu.setPosition(windowSize.x / 2 - textureBackgroundSize.x - textureBackgroundSize.x/4, windowSize.y / 2 - textureBackgroundSize.y/2); 
+    spriteFinalMenu.setPosition( (float) windowSize.x / 2 - (float) textureBackgroundSize.x - (float) textureBackgroundSize.x/4, (float) windowSize.y / 2 - (float) textureBackgroundSize.y/2); 
     
 	sf::Font font;
 	if (!font.loadFromFile("resource/mk2.ttf"))
@@ -117,7 +117,7 @@ int main()
 	textStart.setCharacterSize(75); 
 	textStart.setFillColor(sf::Color::White);
 	textStart.setStyle(sf::Text::Bold);
-	textStart.setPosition(windowSize.x/2 - textStart.getLocalBounds().width/2 - 40, windowSize.y/2 - 100 );
+	textStart.setPosition((float) windowSize.x/2 - textStart.getLocalBounds().width/2 - 40, (float) windowSize.y/2 - 100 );
 	
 	textCreditsIn = textStart;
 	textCreditsIn.setString("B TO INSERT CREDITS");
@@ -144,7 +144,7 @@ int main()
 
 	textWinners = textStart;
 	textWinners.setCharacterSize(55);
-	textWinners.setPosition(windowSize.x / 2 - textureBackgroundSize.x + 150, windowSize.y / 2 - textureBackgroundSize.y/2 + 60);
+	textWinners.setPosition((float) windowSize.x / 2 - (float) textureBackgroundSize.x + 150, (float) windowSize.y / 2 - (float) textureBackgroundSize.y/2 + 60);
 	
 	//https://github.com/skyrpex/RichText
 	//this texts are used for coloring the 1 2 and 3 place with colors
@@ -192,9 +192,9 @@ int main()
 
 	Player spriteList[SIZESPRITES];	
 	sf::Texture spriteTextures;
-	sf::Sprite spriteCharacter;
 	
 	vector<int> placeRace;
+	string auxWinner = "";
 	
 	//In here we fill the struct by reading all images and assigning them to a vector of textures and assigning the first of these to a sprite
 	for(int i=1;i<=SIZESPRITES;i++)
@@ -252,6 +252,7 @@ int main()
 				for(int i=0;i<=6;i++)
 					spriteList[i].currentWaypoint = 1;			
 				
+				auxWinner = "";
 				playerPosition.clear();	
 				continue;
 			}
@@ -298,7 +299,7 @@ int main()
 					random_device dev;
 					mt19937 rng(dev());
 					uniform_int_distribution<mt19937::result_type> dist6(0,6); // distribution in range [0, 6]
-					playerOut = dist6(rng);
+					playerOut = (int) dist6(rng);
 					cout << playerOut << endl;	
 					
 					//setting up player position so that is not a hole when a player is left out
@@ -310,16 +311,13 @@ int main()
 							continue;
 							
 						playerPosition.insert({i,playerOutAux[playerOutIndexAux]});
-						spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + playerPosition[i]);
+						spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + (float) playerPosition[i]);
 						playerOutIndexAux++;
 								
 						//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
-						random_device dev;
-						mt19937 rng(dev());
-						uniform_int_distribution<mt19937::result_type> dist6(0,10); // distribution in range [0, 10]
-						float velS = 0.3 + dist6(rng) * 0.01;
-						cout << velS << endl;
-						
+						uniform_int_distribution<mt19937::result_type> dist5(0,10); // distribution in range [0, 10]
+						float velS = (float) (0.3 + (float) dist5(rng) * 0.01);
+						cout << velS << endl;					
 						spriteList[i].v = velS;
 					}
 					
@@ -348,9 +346,12 @@ int main()
 			elapsedPlay = playClock.getElapsedTime();
 			cout << elapsedPlay.asSeconds() << endl;
 			
-			string auxWinner = raceResults(placeRace,playerMap);
-			cout << auxWinner << endl;
-			textWinners.setString(auxWinner);
+			if(auxWinner == "")
+			{
+				auxWinner = raceResults(placeRace,playerMap);
+				cout << auxWinner << endl;
+				textWinners.setString(auxWinner);
+			}
 			flagPlay = false;
 			
 			window.draw(spriteFinalMenu);
@@ -388,7 +389,7 @@ int main()
 					
 				double distance = sqrt( 
 				(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x )*(spriteList[i].x.getPosition().x - waypointList[ spriteList[i].currentWaypoint ].x) +
-				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + playerPosition[i]) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + playerPosition[i]))  ); 
+				(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + (float) playerPosition[i]) )*(spriteList[i].x.getPosition().y - (waypointList[ spriteList[i].currentWaypoint ].y + (float) playerPosition[i]))  ); 
 				if( distance < RADIUS)
 				{
 					spriteList[i].currentWaypoint++;	
@@ -400,7 +401,7 @@ int main()
 					}
 				}
 				//we need a unit vector so we can have small movement
-				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,playerPosition[i]) );
+				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,(float) playerPosition[i]) );
 				
 				//cout << distance << endl;
 				//cout << spriteList[i].v * direction.x << " " << spriteList[i].v * direction.y << endl;
