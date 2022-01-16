@@ -35,3 +35,7 @@ To compile:
 g++ -c main.cpp
 
 g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+
+makefile - bug
+
+https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
