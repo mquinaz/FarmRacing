@@ -255,6 +255,16 @@ int main()
                      << sf::Mouse::getPosition(window).y << endl;
 			}
 			
+			if (event.key.code == sf::Keyboard::Enter && placeRace.size() == 6)
+			{
+				placeRace.clear();
+				for(int i=0;i<=6;i++)
+					spriteList[i].currentWaypoint = 1;			
+				
+				playerPosition.clear();	
+				continue;
+			}
+			
             if(flagPlay)
 				break;
 				
@@ -288,8 +298,7 @@ int main()
 						continue;
 					}
 					creditsIn -= PRICEPLAY;
-					elapsedPlay = playClock.restart();
-					flagPlay = true;			
+					elapsedPlay = playClock.restart();			
 					plays++;
 					textStart.setString("PLAY: " + to_string(plays));
 					textCredits.setString( to_string(creditsIn) + " CREDITS IN / " + to_string(creditsOut) + " CREDITS OUT");
@@ -310,9 +319,11 @@ int main()
 							continue;
 							
 						playerPosition.insert({i,playerOutAux[playerOutIndexAux]});
-						spriteList[i].x.move( waypointList[0].x , waypointList[0].y + playerPosition[i]);
+						spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + playerPosition[i]);
 						playerOutIndexAux++;
 					}
+					
+					flagPlay = true;
 				}
 			}
         }
@@ -336,13 +347,7 @@ int main()
 			cout << auxWinner << endl;
 			textWinners.setString(auxWinner);
 			flagPlay = false;
-			/*placeRace.clear();
-			for(int i=0;i<=6;i++)
-			{
-				spriteList[i].x.setPosition( waypointList[0].x , waypointList[0].y + i*100);
-				spriteList[i].currentWaypoint = 1;			
-			}
-			*/
+			
 			window.draw(spriteFinalMenu);
 			window.draw(textWinners);
 			window.draw(text1);
@@ -385,7 +390,7 @@ int main()
 				sf::Vector2f direction = normalize( waypointList[ spriteList[i].currentWaypoint ] - spriteList[i].x.getPosition() + sf::Vector2f(0,playerPosition[i]) );
 				
 				//cout << distance << endl;
-				//cout << VELOCITY * direction.x << " " << VELOCITY * direction.y << endl;
+				//cout << spriteList[i].v * direction.x << " " << spriteList[i].v * direction.y << endl;
 				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
 				spriteList[i].x.move( spriteList[i].v * direction.x, spriteList[i].v  * direction.y );
 
