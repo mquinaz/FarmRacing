@@ -23,6 +23,8 @@ shorturl.at/efET4
 
 https://br.freepik.com/vetores-premium/lucky-husky-game-sprites_1420548.htm
 
+https://www.shutterstock.com/search/pigeon+sprite
+
 https://www.istockphoto.com/pt/ilustra%C3%A7%C3%B5es/wooden-menu-boards-cartoons
 
 
@@ -44,6 +46,6 @@ or using CMake:
 
 And moving the resources folder to the build folder
 
-he makefile has a bug
+Makefile is not finished/does not compile
 
 https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
