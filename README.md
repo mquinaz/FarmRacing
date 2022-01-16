@@ -1,6 +1,10 @@
-# HorseRacing
+# Farm Racing
 
-The idea based on kentucky derby/variations on the casino game. Adapted to farm animals due to finding easier sprites. UI based on the following arcade game:
+C++ SFML 2D game
+
+![Farm Racing](https://imgur.com/LNswzxV)
+
+The idea based on kentucky derby/variations on the casino game. UI based on the following arcade game:
 
 ![Mortal Kombat2](https://github.com/mquinaz/HorseRacing/blob/main/resource/mortalKombatArcade.jpg)
 ## Resources taken from:
