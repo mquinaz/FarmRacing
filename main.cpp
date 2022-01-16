@@ -19,7 +19,7 @@ struct Player
 {
 	vector<sf::Texture> frames;
 	int size,currentFrame,currentWaypoint;
-	float v,spriteV;
+	double v,spriteV;
 	sf::Sprite x;
 };
 
@@ -406,7 +406,7 @@ int main()
 				//cout << distance << endl;
 				//cout << spriteList[i].v * direction.x << " " << spriteList[i].v * direction.y << endl;
 				//cout <<  spriteList[i].x.getPosition().x + VELOCITY * direction.x << " " <<  spriteList[i].x.getPosition().y + VELOCITY * direction.y ;
-				spriteList[i].x.move( spriteList[i].v * direction.x, spriteList[i].v  * direction.y );
+				spriteList[i].x.move( (float) spriteList[i].v * direction.x, (float) spriteList[i].v  * direction.y );
 
 				spriteList[i].x.setScale(sf::Vector2f(2,2)); 
 				window.draw(spriteList[i].x);			

@@ -7,7 +7,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics)
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
-    add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow )#[[-Wconversion) #[[-Wsign-conversion) ]]
+    add_compile_options(-Werror -Wall -Wextra -Wpedantic -Wshadow -Wconversion) #[[-Wsign-conversion) ]]
 endif()
 
 add_executable(farmrace main.cpp)
