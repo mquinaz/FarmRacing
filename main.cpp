@@ -383,7 +383,7 @@ int main()
 			//for any playing character we see the distance to his next waypoint, if its close we make him go to the next one
 			for(int i=0;i<=6;i++)
 			{				
-				if( spriteList[i].currentWaypoint >=  waypointList.size() || i == playerOut)
+				if( spriteList[i].currentWaypoint >=  (int) waypointList.size() || i == playerOut)
 					continue;
 					
 				double distance = sqrt( 
@@ -393,7 +393,7 @@ int main()
 				{
 					spriteList[i].currentWaypoint++;	
 					//if a character finished a race put him in placeRace list
-					if( spriteList[i].currentWaypoint >= waypointList.size() )
+					if( spriteList[i].currentWaypoint >= (int) waypointList.size() )
 					{
 						placeRace.push_back(i);
 						continue;
