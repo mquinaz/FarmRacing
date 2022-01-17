@@ -36,7 +36,7 @@ For now the game only works at linux with:
 
 ### g++ -c main.cpp
 
-### g++ main.o -o sfml-app -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+### g++ main.o -o farmrace -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 or using CMake:
 
@@ -46,6 +46,6 @@ or using CMake:
 
 And moving the resources folder to the build folder
 
-Makefile is not finished/does not compile
+### Makefile and Cmake for windows is not finished/does not compile
 
 https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
