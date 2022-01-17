@@ -2,7 +2,7 @@
 
 C++ SFML 2D game
 
-
+![Farm Racing](https://github.com/mquinaz/HorseRacing/blob/main/resource/game.png)
 
 The idea based on kentucky derby/variations on the casino game. UI based on the following arcade game:
 
