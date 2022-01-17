@@ -9,8 +9,8 @@
 
 #define PRICEPLAY 1
 #define SIZESPRITES 7
-#define DURATIONANIMATION 0.08
-#define VELOCITY 0.035
+//#define DURATIONANIMATION 0.08
+//#define VELOCITY 0.035
 #define RADIUS 25
 
 using namespace std;
@@ -23,7 +23,7 @@ struct Player
 	sf::Sprite x;
 };
 
-
+//we need a unit vector so that the movement isnt irrealistic (later on the player movement
 sf::Vector2f normalize(sf::Vector2f vec)
 {
 	
@@ -225,6 +225,31 @@ int main()
 		spriteList[i-1].spriteV = 0;
 	}
 	
+	Player pigeonList[40];	
+	sf::Texture spritePigeonTextures;
+	//pigeon has 9 frames
+	for(int i=1;i<=40;i++)
+	{
+		for(int k=1;k<=9;k++)
+		{
+			if (!spritePigeonTextures.loadFromFile("resource/pigeon"+to_string(k)+".png") )
+			{
+				cout << "Error loading file pigeon" + to_string(k) + ".png" << endl;
+				return -1;			
+			}
+			pigeonList[i-1].frames.push_back( spritePigeonTextures );				
+		}
+		pigeonList[i-1].size = 9;
+		sf::Sprite spriteCharacter( pigeonList[i-1].frames[0] );
+		pigeonList[i-1].currentFrame = 0;
+		pigeonList[i-1].x = spriteCharacter;
+		pigeonList[i-1].currentWaypoint = 1;
+		pigeonList[i-1].v = 0.5;
+		pigeonList[i-1].spriteV = 0;
+		pigeonList[i-1].x.setPosition( 0, 100  );
+	}
+	
+	vector<sf::RectangleShape > poopList;
 	
 	//game loop
     while (window.isOpen())
@@ -254,6 +279,9 @@ int main()
 				
 				auxWinner = "";
 				playerPosition.clear();	
+				poopList.clear();
+				for(int i=0;i<40;i++)
+					pigeonList[i].x.setPosition(0,100);
 				continue;
 			}
 			
@@ -300,7 +328,7 @@ int main()
 					mt19937 rng(dev());
 					uniform_int_distribution<mt19937::result_type> dist6(0,6); // distribution in range [0, 6]
 					playerOut = (int) dist6(rng);
-					cout << playerOut << endl;	
+					cout << "Player " << playerMap[playerOut] << " is not playing this round" << endl;	
 					
 					//setting up player position so that is not a hole when a player is left out
 					int playerOutAux[] = {0,100,200,300,400,500};
@@ -317,7 +345,7 @@ int main()
 						//https://stackoverflow.com/questions/13445688/how-to-generate-a-random-number-in-c
 						uniform_int_distribution<mt19937::result_type> dist5(0,10); // distribution in range [0, 10]
 						float velS = (float) (0.3 + (float) dist5(rng) * 0.01);
-						cout << velS << endl;					
+						cout << "velocity for " << playerMap[i] << " " << velS << endl;					
 						spriteList[i].v = velS;
 					}
 					
@@ -363,7 +391,58 @@ int main()
 		
 		//if we pressed enter
 		if(flagPlay)
-		{	
+		{
+			//pigeon sprite change then move pigeons, generate a random number, if its the same as 20000 then generate a poop
+			for(int i=0;i<40;i++)
+			{
+				pigeonList[i].spriteV += pigeonList[i].v*0.1;
+				int currentFrameAux = (pigeonList[i].currentFrame + int(pigeonList[i].spriteV)) % pigeonList[i].size;
+				if( pigeonList[i].currentFrame != currentFrameAux)
+				{
+					pigeonList[i].currentFrame = currentFrameAux;
+					pigeonList[i].x.setTexture( pigeonList[i].frames[ pigeonList[i].currentFrame ] );
+					pigeonList[i].spriteV = 0;
+				}
+				
+				pigeonList[i].x.move( (0.2f+(float)i*0.02f) , 0.001f); 
+
+				random_device dev;
+				mt19937 rng(dev());
+				uniform_int_distribution<mt19937::result_type> dist5(0,20000); // distribution in range [0, 20000]
+				float flagPoop = (float) dist5(rng);
+
+				if( flagPoop == 20000)
+				{
+					sf::RectangleShape rectangle(sf::Vector2f(2, 25));
+					rectangle.setPosition( pigeonList[i].x.getPosition() + sf::Vector2f(25,25));
+					poopList.push_back(rectangle);
+				}				
+				pigeonList[i].x.setScale(sf::Vector2f(0.2f,0.2f)); 
+				if( pigeonList[i].x.getPosition().x >  (float) windowSize.x)
+					pigeonList[i].x.setPosition(0,100);
+				
+				window.draw(pigeonList[i].x);		
+			}
+			
+			//for each poop that exists move it and check if it colides with any player or passed the window size
+			for(int j=0;j<(int)poopList.size();j++)
+			{
+				poopList[j].move( 0, 0.5f);
+				window.draw(poopList[j]);
+				for(int i=0;i<=6;i++)
+				{
+					if( i == playerOut)
+						continue;
+					if( poopList[j].getGlobalBounds().intersects(spriteList[i].x.getGlobalBounds()) )
+					{
+						spriteList[i].v -= 0.04;
+						poopList.erase(poopList.begin() + j);
+					}
+				}
+				if(poopList[j].getPosition().y > (float) windowSize.y)
+					poopList.erase(poopList.begin() + j);
+			}
+			
 			//change sprites of the playing characters based on play
 			for(int i=0;i<=6;i++)
 			{
