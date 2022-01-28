@@ -45,7 +45,3 @@ or using CMake:
 ### cmake --build build
 
 And moving the resources folder to the build folder
-
-### Makefile and Cmake for windows is not finished/does not compile
-
-https://github.com/ChrisThrasher/boids/blob/master/CMakeLists.txt
